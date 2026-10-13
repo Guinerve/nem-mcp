@@ -46,3 +46,10 @@ def test_tools_are_registered_with_descriptions():
     names = {t.name for t in tools}
     assert {"get_current_prices", "get_generation_mix", "get_interconnector_flows", "get_recent_price_spikes"} <= names
     assert all(t.description for t in tools)
+
+
+def test_price_spike_scan_flags_low_prices_and_caps_the_window():
+    out = server.get_recent_price_spikes("SA1", hours=100, below_aud_per_mwh=50)
+    assert out["intervals_requested"] == 48  # 4 hours of 5-minute intervals
+    assert [e["kind"] for e in out["events"]] == ["negative_or_low"]
+    assert out["events"][0]["price_aud_per_mwh"] == 19.33

@@ -21,8 +21,12 @@ def _cache_dir() -> Path:
 
 
 def _fetch_day_zip(report: str, prefix: str, day: date, http: httpx.Client | None) -> bytes:
-    http = http or httpx.Client(timeout=180, follow_redirects=True)
-    resp = http.get(f"{BASE}/{report}/PUBLIC_{prefix}_{day:%Y%m%d}.zip")
+    url = f"{BASE}/{report}/PUBLIC_{prefix}_{day:%Y%m%d}.zip"
+    if http is None:
+        with httpx.Client(timeout=180, follow_redirects=True) as own:
+            resp = own.get(url)
+    else:
+        resp = http.get(url)
     resp.raise_for_status()
     return resp.content
 

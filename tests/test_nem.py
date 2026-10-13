@@ -1,9 +1,12 @@
 import math
+from pathlib import Path
 
 import pytest
 
 from nem import emissions_intensity, generation_mix, renewable_share
 from nem.mms import parse_mms
+
+FIX = Path(__file__).parent / "fixtures"
 
 
 def test_parse_mms_handles_multiple_tables_and_blank_cells():
@@ -93,3 +96,34 @@ def test_unmapped_generation_is_reported(client):
     from nem import unmapped_mw
 
     assert unmapped_mw(client.generation_by_unit()) > 0
+
+
+def _with_intervention_rows(text: str) -> str:
+    """Add an intervention (physical) run for V-SA and SA1, as AEMO publishes when it intervenes."""
+    out = []
+    for line in text.splitlines():
+        out.append(line)
+        if line.startswith("D,DISPATCH,INTERCONNECTORRES,") and ",V-SA," in line:
+            f = line.split(",")
+            f[8], f[10] = "1", "-111.5"  # INTERVENTION, MWFLOW
+            out.append(",".join(f))
+        if line.startswith("D,DISPATCH,PRICE,") and ",SA1," in line:
+            f = line.split(",")
+            f[8], f[9] = "1", "999.9"  # INTERVENTION, RRP
+            out.append(",".join(f))
+    return "\n".join(out) + "\n"
+
+
+def test_intervention_uses_pricing_run_prices_and_physical_run_flows():
+    """Prices come from the pricing run (INTERVENTION=0). Flows come from the physical run
+    (INTERVENTION=1) when there is one, because that run sets what really happens."""
+    from nem import NemClient
+
+    text = _with_intervention_rows((FIX / "dispatchis.csv").read_text())
+    snap = NemClient.parse_dispatch_is(text)
+    assert len(snap.prices) == 5
+    assert snap.prices.set_index("region").loc["SA1", "rrp"] == pytest.approx(19.33274)
+    ic = snap.interconnectors.set_index("id")
+    assert ic.index.is_unique and len(ic) == 7
+    assert ic.loc["V-SA", "mw_flow"] == pytest.approx(-111.5)
+    assert ic.loc["VIC1-NSW1", "mw_flow"] == pytest.approx(665.3909)

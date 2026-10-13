@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import logging
+import math
 
 from mcp.server.mcpserver import MCPServer
-
-import math
 
 from nem import NemClient, emissions_intensity, generation_mix, renewable_share, unmapped_mw
 from nem.client import REGIONS
@@ -68,6 +67,8 @@ def get_generation_mix(region: str | None = None) -> dict:
 
     Covers scheduled and semi-scheduled units with SCADA data. Rooftop solar is not included.
     Emissions intensity is an average over local generation (t CO2e per MWh), not marginal, and ignores imports.
+    unmapped_generation_mw_excluded is output from units missing from AEMO's registry. Those units have
+    no region, so this figure is always for the whole NEM, even when you ask for one region.
     """
     r = _check_region(region)
     units = client().generation_by_unit()

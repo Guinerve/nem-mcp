@@ -42,7 +42,7 @@ def parse_mms(text: str) -> dict[str, pd.DataFrame]:
 
 def _coerce(df: pd.DataFrame) -> pd.DataFrame:
     for col in df.columns:
-        if col.endswith("DATE") or col in {"LASTCHANGED"} or col.endswith("DATETIME"):
+        if col.endswith(("DATE", "DATETIME")) or col == "LASTCHANGED":
             parsed = pd.to_datetime(df[col], format="%Y/%m/%d %H:%M:%S", errors="coerce")
             if parsed.notna().any():
                 df[col] = parsed.dt.tz_localize(NEM_TZ)

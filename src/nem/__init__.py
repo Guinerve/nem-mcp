@@ -3,10 +3,10 @@ from .client import (
     DispatchSnapshot,
     NemClient,
     NemDataError,
-    unmapped_mw,
     emissions_intensity,
     generation_mix,
     renewable_share,
+    unmapped_mw,
 )
 
 __all__ = [
@@ -14,8 +14,8 @@ __all__ = [
     "DispatchSnapshot",
     "NemClient",
     "NemDataError",
-    "unmapped_mw",
     "emissions_intensity",
     "generation_mix",
     "renewable_share",
+    "unmapped_mw",
 ]

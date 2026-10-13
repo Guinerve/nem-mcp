@@ -110,7 +110,11 @@ class NemClient:
         )
         prices.columns = ["region", "rrp", "demand"]
         ic = tables["DISPATCH.INTERCONNECTORRES"]
-        ic = ic[ic["INTERVENTION"] == 0][["INTERCONNECTORID", "MWFLOW", "MWLOSSES", "EXPORTLIMIT", "IMPORTLIMIT"]]
+        # When AEMO intervenes it runs dispatch twice. Prices come from the pricing run
+        # (INTERVENTION=0), but physical flows come from the intervention run (INTERVENTION=1).
+        ic = ic.sort_values("INTERVENTION", ascending=False, kind="stable")
+        ic = ic.drop_duplicates("INTERCONNECTORID").sort_values("INTERCONNECTORID")
+        ic = ic[["INTERCONNECTORID", "MWFLOW", "MWLOSSES", "EXPORTLIMIT", "IMPORTLIMIT"]]
         ic.columns = ["id", "mw_flow", "losses_mw", "export_limit", "import_limit"]
         # Positive MWFLOW is from the first-named region to the second. Verified against the region-pair
         # totals in DISPATCH.INTERCONNECTION (e.g. NSW1-QLD1 + N-Q-MNSP1 = NSW1 to QLD1).

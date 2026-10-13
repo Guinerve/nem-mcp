@@ -73,3 +73,19 @@ def test_partial_day_is_not_cached(monkeypatch, tmp_path):
     monkeypatch.setattr(archive, "_cache_dir", lambda: tmp_path)
     archive.load_scada_day(date(2026, 10, 12), client(nested((FIX / "dispatchscada.csv").read_text(), 1)))
     assert list(tmp_path.glob("scada_*")) == []  # one interval is not a day
+
+
+def test_bad_archive_zip_raises_a_typed_error(monkeypatch, tmp_path):
+    """Callers catch NemDataError for unusable NEMWeb files, so a bad zip must raise it too."""
+    import pytest
+
+    from nem import NemDataError
+
+    monkeypatch.setattr(archive, "_cache_dir", lambda: tmp_path)
+    with pytest.raises(NemDataError):
+        archive.load_scada_day(date(2026, 10, 12), client(b"<html>not a zip</html>"))
+    outer = io.BytesIO()
+    with zipfile.ZipFile(outer, "w") as z:
+        z.writestr("f0.zip", b"also not a zip")
+    with pytest.raises(NemDataError):
+        archive.load_prices_day(date(2026, 10, 12), client(outer.getvalue()))

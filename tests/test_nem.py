@@ -127,3 +127,33 @@ def test_intervention_uses_pricing_run_prices_and_physical_run_flows():
     assert ic.index.is_unique and len(ic) == 7
     assert ic.loc["V-SA", "mw_flow"] == pytest.approx(-111.5)
     assert ic.loc["VIC1-NSW1", "mw_flow"] == pytest.approx(665.3909)
+
+
+def test_generator_registry_is_cached_for_a_while(client, monkeypatch):
+    """The register changes rarely, so polling must not download it on every call."""
+    import time
+
+    from nem import NemClient
+
+    calls = []
+    original = client.http.get
+    client.http.get = lambda url, *a, **k: calls.append(url) or original(url, *a, **k)
+    client.generators()
+    NemClient(cache_dir=client.cache_dir, http=client.http).generators()  # a new client reuses the disk copy
+    assert len([c for c in calls if c.endswith("CO2EII_AVAILABLE_GENERATORS.CSV")]) == 1
+    later = time.time() + 7 * 3600
+    monkeypatch.setattr(time, "time", lambda: later)
+    client.generators()
+    assert len([c for c in calls if c.endswith("CO2EII_AVAILABLE_GENERATORS.CSV")]) == 2
+
+
+def test_bad_generator_register_raises_and_is_not_cached(tmp_path):
+    import httpx
+
+    from nem import NemClient, NemDataError
+
+    http = httpx.Client(transport=httpx.MockTransport(lambda r: httpx.Response(200, text="<html>busy</html>")))
+    c = NemClient(cache_dir=tmp_path, http=http)
+    with pytest.raises(NemDataError):
+        c.generators()
+    assert list(tmp_path.glob("recent__*")) == []

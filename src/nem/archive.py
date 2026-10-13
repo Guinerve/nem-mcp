@@ -11,6 +11,8 @@ from pathlib import Path
 import httpx
 import pandas as pd
 
+from .client import NemDataError
+
 BASE = "https://nemweb.com.au/Reports/Archive"
 
 
@@ -32,10 +34,13 @@ def _fetch_day_zip(report: str, prefix: str, day: date, http: httpx.Client | Non
 
 
 def _inner_csvs(outer_bytes: bytes):
-    with zipfile.ZipFile(io.BytesIO(outer_bytes)) as outer:
-        for name in sorted(outer.namelist()):
-            with zipfile.ZipFile(io.BytesIO(outer.read(name))) as inner:
-                yield inner.read(inner.namelist()[0]).decode("utf-8", "replace")
+    try:
+        with zipfile.ZipFile(io.BytesIO(outer_bytes)) as outer:
+            for name in sorted(outer.namelist()):
+                with zipfile.ZipFile(io.BytesIO(outer.read(name))) as inner:
+                    yield inner.read(inner.namelist()[0]).decode("utf-8", "replace")
+    except (zipfile.BadZipFile, IndexError) as exc:
+        raise NemDataError(f"unusable archive zip: {type(exc).__name__}") from exc
 
 
 def _complete(df: pd.DataFrame, min_intervals: int = 280) -> bool:

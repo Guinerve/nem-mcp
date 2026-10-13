@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import io
 import re
+import time
 import zipfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -29,6 +30,7 @@ _PAIRS = {
     "V-S-MNSP1": ("VIC1", "SA1"),
     "T-V-MNSP1": ("TAS1", "VIC1"),
 }
+GENERATORS_MAX_AGE_S = 6 * 3600  # the CDEII unit register changes rarely
 _LINK = re.compile(r'HREF="([^"]+\.(?:zip|CSV|csv))"', re.IGNORECASE)
 
 
@@ -69,6 +71,21 @@ class NemClient:
             tmp = cache.with_suffix(cache.suffix + ".part")
             tmp.write_bytes(resp.content)
             tmp.replace(cache)  # atomic: a crash never leaves a truncated cache file
+        return resp.content
+
+    def _get_recent(self, url: str, max_age_s: float, check=None) -> bytes:
+        """Fetch a URL that changes rarely, reusing a disk copy younger than `max_age_s`.
+        `check(content)` runs before the copy is saved, so a bad response is never cached."""
+        cache = self.cache_dir / ("recent__" + url.split("/Reports/", 1)[-1].replace("/", "__"))
+        if cache.exists() and time.time() - cache.stat().st_mtime < max_age_s:
+            return cache.read_bytes()
+        resp = self.http.get(url)
+        resp.raise_for_status()
+        if check is not None:
+            check(resp.content)
+        tmp = cache.with_suffix(cache.suffix + ".part")
+        tmp.write_bytes(resp.content)
+        tmp.replace(cache)
         return resp.content
 
     def list_files(self, report: str) -> list[str]:
@@ -124,13 +141,22 @@ class NemClient:
         return DispatchSnapshot(interval_end, prices.reset_index(drop=True), ic.reset_index(drop=True))
 
     def generators(self) -> pd.DataFrame:
-        """DUID registry from AEMO's CDEII feed: station, region, emissions factor, fuel group."""
+        """DUID registry from AEMO's CDEII feed: station, region, emissions factor, fuel group.
+
+        The file is cached on disk for GENERATORS_MAX_AGE_S, so polling does not fetch it every time.
+        """
         url = f"{self.base_url}/Reports/Current/CDEII/CO2EII_AVAILABLE_GENERATORS.CSV"
-        return self.parse_generators(self._get(url).decode("utf-8", "replace"))
+        def parse(blob: bytes) -> pd.DataFrame:
+            return self.parse_generators(blob.decode("utf-8", "replace"))
+
+        return parse(self._get_recent(url, GENERATORS_MAX_AGE_S, check=parse))
 
     @staticmethod
     def parse_generators(text: str) -> pd.DataFrame:
-        df = parse_mms(text)["CO2EII.PUBLISHING"]
+        tables = parse_mms(text)
+        if "CO2EII.PUBLISHING" not in tables or tables["CO2EII.PUBLISHING"].empty:
+            raise NemDataError("generator register is missing table CO2EII.PUBLISHING")
+        df = tables["CO2EII.PUBLISHING"]
         df = df.rename(
             columns={
                 "STATIONNAME": "station",

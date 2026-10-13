@@ -89,3 +89,13 @@ def test_bad_archive_zip_raises_a_typed_error(monkeypatch, tmp_path):
         z.writestr("f0.zip", b"also not a zip")
     with pytest.raises(NemDataError):
         archive.load_prices_day(date(2026, 10, 12), client(outer.getvalue()))
+
+
+def test_parse_scada_rows_preserves_unicode_line_separator_in_duid():
+    text = (
+        'D,DISPATCH,UNIT_SCADA,1,2026/10/12 21:25:00,"WIND\u2028UNIT",12.5,x\n'
+    )
+
+    assert archive.parse_scada_rows(text) == [
+        ("2026/10/12 21:25:00", "WIND\u2028UNIT", 12.5)
+    ]

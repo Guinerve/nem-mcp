@@ -61,7 +61,7 @@ def _stamp(df: pd.DataFrame) -> pd.DataFrame:
 
 def parse_scada_rows(text: str) -> list[tuple[str, str, float]]:
     out = []
-    for rec in csv.reader(text.splitlines()):
+    for rec in csv.reader(io.StringIO(text, newline="")):
         if len(rec) > 6 and rec[0] == "D" and rec[2] == "UNIT_SCADA" and rec[6] != "":
             out.append((rec[4], rec[5], float(rec[6])))
     return out

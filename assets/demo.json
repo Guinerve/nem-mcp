@@ -1,0 +1,67 @@
+[
+  {
+    "tool": "get_current_prices",
+    "arguments": {},
+    "result": {
+      "interval_end_nem_time": "2026-10-13T22:05:00+10:00",
+      "regions": [
+        {
+          "region": "NSW1",
+          "price_aud_per_mwh": 180.08,
+          "demand_mw": 7576.0
+        },
+        {
+          "region": "QLD1",
+          "price_aud_per_mwh": 174.73,
+          "demand_mw": 7035.0
+        },
+        {
+          "region": "SA1",
+          "price_aud_per_mwh": 101.02,
+          "demand_mw": 1351.0
+        },
+        {
+          "region": "TAS1",
+          "price_aud_per_mwh": 104.08,
+          "demand_mw": 1042.0
+        },
+        {
+          "region": "VIC1",
+          "price_aud_per_mwh": 111.98,
+          "demand_mw": 5231.0
+        }
+      ]
+    }
+  },
+  {
+    "tool": "get_generation_mix",
+    "arguments": {
+      "region": "SA1"
+    },
+    "result": {
+      "interval_end_nem_time": "2026-10-13T22:00:00+10:00",
+      "region": "SA1",
+      "total_generation_mw": 1775.0,
+      "renewable_share": 0.758,
+      "emissions_intensity_tco2e_per_mwh": 0.107,
+      "unmapped_generation_mw_excluded": 48.0,
+      "by_fuel": [
+        {
+          "fuel": "Wind",
+          "mw": 1345.0,
+          "share": 0.758
+        },
+        {
+          "fuel": "Gas",
+          "mw": 397.0,
+          "share": 0.224
+        },
+        {
+          "fuel": "Battery",
+          "mw": 32.0,
+          "share": 0.018
+        }
+      ]
+    }
+  }
+]

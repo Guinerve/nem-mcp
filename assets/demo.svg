@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1138" height="407" viewBox="0 0 1138 407" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">
+<title>nem-mcp: two real tool calls over stdio, with live AEMO data from 13 Oct 2026</title>
+<rect width="100%" height="100%" rx="10" fill="#0d1117"/>
+<circle cx="26" cy="28" r="6" fill="#ff5f57"/><circle cx="46" cy="28" r="6" fill="#febc2e"/><circle cx="66" cy="28" r="6" fill="#28c840"/>
+<text x="86" y="32" fill="#8b949e">nem-mcp: two real tool calls over stdio, with live AEMO data from 13 Oct 2026</text>
+<rect x="20" y="56" width="609.4" height="331" rx="8" fill="#161b22" stroke="#30363d"/>
+<text x="40" y="84" fill="#8b949e" xml:space="preserve">tool call  <tspan fill="#7ee787">get_current_prices()</tspan></text>
+<line x1="20" y1="102" x2="629.4" y2="102" stroke="#30363d"/>
+<text x="40" y="126" fill="#e6edf3" xml:space="preserve">{</text>
+<text x="40" y="145" fill="#e6edf3" xml:space="preserve">  <tspan fill="#79c0ff">&quot;interval_end_nem_time&quot;</tspan>: <tspan fill="#a5d6ff">&quot;2026-10-13T22:05:00+10:00&quot;</tspan>,</text>
+<text x="40" y="164" fill="#e6edf3" xml:space="preserve">  <tspan fill="#79c0ff">&quot;regions&quot;</tspan>: [</text>
+<text x="40" y="183" fill="#e6edf3" xml:space="preserve">    {<tspan fill="#79c0ff">&quot;region&quot;</tspan>: <tspan fill="#a5d6ff">&quot;NSW1&quot;</tspan>, <tspan fill="#79c0ff">&quot;price_aud_per_mwh&quot;</tspan>: <tspan fill="#ffa657">180.08</tspan>, <tspan fill="#79c0ff">&quot;demand_mw&quot;</tspan>: <tspan fill="#ffa657">7576.0</tspan>},</text>
+<text x="40" y="202" fill="#e6edf3" xml:space="preserve">    {<tspan fill="#79c0ff">&quot;region&quot;</tspan>: <tspan fill="#a5d6ff">&quot;QLD1&quot;</tspan>, <tspan fill="#79c0ff">&quot;price_aud_per_mwh&quot;</tspan>: <tspan fill="#ffa657">174.73</tspan>, <tspan fill="#79c0ff">&quot;demand_mw&quot;</tspan>: <tspan fill="#ffa657">7035.0</tspan>},</text>
+<text x="40" y="221" fill="#e6edf3" xml:space="preserve">    {<tspan fill="#79c0ff">&quot;region&quot;</tspan>: <tspan fill="#a5d6ff">&quot;SA1&quot;</tspan>, <tspan fill="#79c0ff">&quot;price_aud_per_mwh&quot;</tspan>: <tspan fill="#ffa657">101.02</tspan>, <tspan fill="#79c0ff">&quot;demand_mw&quot;</tspan>: <tspan fill="#ffa657">1351.0</tspan>},</text>
+<text x="40" y="240" fill="#e6edf3" xml:space="preserve">    {<tspan fill="#79c0ff">&quot;region&quot;</tspan>: <tspan fill="#a5d6ff">&quot;TAS1&quot;</tspan>, <tspan fill="#79c0ff">&quot;price_aud_per_mwh&quot;</tspan>: <tspan fill="#ffa657">104.08</tspan>, <tspan fill="#79c0ff">&quot;demand_mw&quot;</tspan>: <tspan fill="#ffa657">1042.0</tspan>},</text>
+<text x="40" y="259" fill="#e6edf3" xml:space="preserve">    {<tspan fill="#79c0ff">&quot;region&quot;</tspan>: <tspan fill="#a5d6ff">&quot;VIC1&quot;</tspan>, <tspan fill="#79c0ff">&quot;price_aud_per_mwh&quot;</tspan>: <tspan fill="#ffa657">111.98</tspan>, <tspan fill="#79c0ff">&quot;demand_mw&quot;</tspan>: <tspan fill="#ffa657">5231.0</tspan>}</text>
+<text x="40" y="278" fill="#e6edf3" xml:space="preserve">  ]</text>
+<text x="40" y="297" fill="#e6edf3" xml:space="preserve">}</text>
+<rect x="649.4" y="56" width="469.0" height="331" rx="8" fill="#161b22" stroke="#30363d"/>
+<text x="669.4" y="84" fill="#8b949e" xml:space="preserve">tool call  <tspan fill="#7ee787">get_generation_mix(&quot;region&quot;: &quot;SA1&quot;)</tspan></text>
+<line x1="649.4" y1="102" x2="1118.4" y2="102" stroke="#30363d"/>
+<text x="669.4" y="126" fill="#e6edf3" xml:space="preserve">{</text>
+<text x="669.4" y="145" fill="#e6edf3" xml:space="preserve">  <tspan fill="#79c0ff">&quot;interval_end_nem_time&quot;</tspan>: <tspan fill="#a5d6ff">&quot;2026-10-13T22:00:00+10:00&quot;</tspan>,</text>
+<text x="669.4" y="164" fill="#e6edf3" xml:space="preserve">  <tspan fill="#79c0ff">&quot;region&quot;</tspan>: <tspan fill="#a5d6ff">&quot;SA1&quot;</tspan>,</text>
+<text x="669.4" y="183" fill="#e6edf3" xml:space="preserve">  <tspan fill="#79c0ff">&quot;total_generation_mw&quot;</tspan>: <tspan fill="#ffa657">1775.0</tspan>,</text>
+<text x="669.4" y="202" fill="#e6edf3" xml:space="preserve">  <tspan fill="#79c0ff">&quot;renewable_share&quot;</tspan>: <tspan fill="#ffa657">0.758</tspan>,</text>
+<text x="669.4" y="221" fill="#e6edf3" xml:space="preserve">  <tspan fill="#79c0ff">&quot;emissions_intensity_tco2e_per_mwh&quot;</tspan>: <tspan fill="#ffa657">0.107</tspan>,</text>
+<text x="669.4" y="240" fill="#e6edf3" xml:space="preserve">  <tspan fill="#79c0ff">&quot;unmapped_generation_mw_excluded&quot;</tspan>: <tspan fill="#ffa657">48.0</tspan>,</text>
+<text x="669.4" y="259" fill="#e6edf3" xml:space="preserve">  <tspan fill="#79c0ff">&quot;by_fuel&quot;</tspan>: [</text>
+<text x="669.4" y="278" fill="#e6edf3" xml:space="preserve">    {<tspan fill="#79c0ff">&quot;fuel&quot;</tspan>: <tspan fill="#a5d6ff">&quot;Wind&quot;</tspan>, <tspan fill="#79c0ff">&quot;mw&quot;</tspan>: <tspan fill="#ffa657">1345.0</tspan>, <tspan fill="#79c0ff">&quot;share&quot;</tspan>: <tspan fill="#ffa657">0.758</tspan>},</text>
+<text x="669.4" y="297" fill="#e6edf3" xml:space="preserve">    {<tspan fill="#79c0ff">&quot;fuel&quot;</tspan>: <tspan fill="#a5d6ff">&quot;Gas&quot;</tspan>, <tspan fill="#79c0ff">&quot;mw&quot;</tspan>: <tspan fill="#ffa657">397.0</tspan>, <tspan fill="#79c0ff">&quot;share&quot;</tspan>: <tspan fill="#ffa657">0.224</tspan>},</text>
+<text x="669.4" y="316" fill="#e6edf3" xml:space="preserve">    {<tspan fill="#79c0ff">&quot;fuel&quot;</tspan>: <tspan fill="#a5d6ff">&quot;Battery&quot;</tspan>, <tspan fill="#79c0ff">&quot;mw&quot;</tspan>: <tspan fill="#ffa657">32.0</tspan>, <tspan fill="#79c0ff">&quot;share&quot;</tspan>: <tspan fill="#ffa657">0.018</tspan>}</text>
+<text x="669.4" y="335" fill="#e6edf3" xml:space="preserve">  ]</text>
+<text x="669.4" y="354" fill="#e6edf3" xml:space="preserve">}</text>
+</svg>

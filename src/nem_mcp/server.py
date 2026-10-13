@@ -15,9 +15,10 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 mcp = MCPServer(
     "nem",
     instructions=(
-        "Live Australian National Electricity Market (NEM) data from AEMO's NEMWeb. "
+        "Live data for Australia's National Electricity Market (NEM), from AEMO's NEMWeb. "
         "Regions: NSW1, QLD1, VIC1, SA1, TAS1. Times are NEM time (AEST, UTC+10). "
-        "Prices are regional reference prices in $/MWh. Data is published, not forecast, and is not advice."
+        "Prices are regional reference prices in $/MWh. The data is what AEMO published. "
+        "It is not a forecast and it is not advice."
     ),
 )
 _client: NemClient | None = None
@@ -43,10 +44,11 @@ def _check_region(region: str | None) -> str | None:
 
 @mcp.tool()
 def get_current_prices() -> dict:
-    """Latest 5-minute regional reference prices (RRP, $/MWh) and total demand (MW) for each NEM region.
+    """Regional reference price (RRP, $/MWh) and total demand (MW) for each NEM region.
 
-    The market floor is -$1,000/MWh and the cap is about $20,000/MWh. Negative prices mean generators are
-    paid to stop (or consumers paid to use), usually from surplus solar or wind.
+    The data is for the latest 5 minute dispatch interval. The market floor price is -$1,000/MWh.
+    The market price cap is above $20,000/MWh, and AEMO updates it each financial year.
+    A negative price usually means there is more solar or wind than the region can use.
     """
     snap = client().dispatch_snapshots(1)[0]
     return {
@@ -63,12 +65,12 @@ def get_generation_mix(region: str | None = None) -> dict:
     """Current generation by fuel (MW and share), renewable share and average emissions intensity.
 
     Args:
-        region: Optional NEM region (NSW1, QLD1, VIC1, SA1, TAS1). Omit for the whole NEM.
+        region: Optional NEM region (NSW1, QLD1, VIC1, SA1, TAS1). Omit it for the whole NEM.
 
-    Covers scheduled and semi-scheduled units with SCADA data. Rooftop solar is not included.
-    Emissions intensity is an average over local generation (t CO2e per MWh), not marginal, and ignores imports.
-    unmapped_generation_mw_excluded is output from units missing from AEMO's registry. Those units have
-    no region, so this figure is always for the whole NEM, even when you ask for one region.
+    The mix covers only units that send 5 minute SCADA data to AEMO. It does not include rooftop solar.
+    Emissions intensity (t CO2e per MWh) is the average of local generation. It is not marginal and it
+    ignores imports. unmapped_generation_mw_excluded is output from units that are not in AEMO's
+    register. Those units have no region, so this number is always for the whole NEM.
     """
     r = _check_region(region)
     units = client().generation_by_unit()
@@ -90,8 +92,8 @@ def get_generation_mix(region: str | None = None) -> dict:
 def get_interconnector_flows() -> dict:
     """Current power flow on each interconnector between regions (MW).
 
-    A positive flow runs from `from_region` to `to_region`; negative runs the other way. Includes the
-    export and import limits that apply this interval, which show when a link is constrained.
+    A positive flow runs from `from_region` to `to_region`. A negative flow runs the other way.
+    The export and import limits apply to this interval. A flow at its limit shows a constrained link.
     """
     snap = client().dispatch_snapshots(1)[0]
     return {
@@ -115,13 +117,14 @@ def get_interconnector_flows() -> dict:
 def get_recent_price_spikes(
     region: str, hours: float = 2.0, above_aud_per_mwh: float = 300.0, below_aud_per_mwh: float = 0.0
 ) -> dict:
-    """Intervals in the last few hours where a region's price was unusually high or negative.
+    """Intervals in the last few hours where the price in a region was high or negative.
 
     Args:
         region: NEM region (NSW1, QLD1, VIC1, SA1, TAS1).
-        hours: How far back to look (max 4; AEMO keeps about a day of 'current' files).
-        above_aud_per_mwh: Report intervals with price above this ($/MWh).
-        below_aud_per_mwh: Report intervals with price below this ($/MWh). Default 0 flags negative prices.
+        hours: How far back to look, up to 4 hours (48 intervals of 5 minutes).
+        above_aud_per_mwh: Report intervals with a price above this value ($/MWh).
+        below_aud_per_mwh: Report intervals with a price below this value ($/MWh). The default of 0
+            reports negative prices.
     """
     r = _check_region(region)
     if r is None:

@@ -1,7 +1,7 @@
 [project]
 name = "nem-mcp"
 version = "0.1.0"
-description = "An MCP server that gives any AI assistant live access to Australian National Electricity Market data, built on a small reusable `nem` client."
+description = "An MCP server that gives an AI assistant live data from the Australian National Electricity Market, with a small Python client for the same data."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = ["httpx>=0.27", "pandas>=2.2", "mcp>=2.0"]
